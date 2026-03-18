@@ -6,18 +6,14 @@
         private $userModel;
         
         public function __construct() {
-            if (!isset($_SESSION["userArr"])){
-                $_SESSION["userArr"] = [];
-            }
-
             $database = new Database();
             $db = $database->connectDB();
             $this->userModel = new UserModel($db);
         }
         
-        public function addFunc($firstName, $lastName) {
+        public function addFunc($firstName, $lastName, $deptID) {
             try {
-                if (empty($firstName) || empty($lastName)) {
+                if (empty($firstName) || empty($lastName) || empty($deptID)) {
                     throw new InvalidArgumentException("Please fill out the form.");
                 }
             
@@ -26,15 +22,7 @@
                     exit;
                 }
 
-                // $_SESSION ["userArr"][] = [
-                //     "firstName" => $firstName,
-                //     "lastName" => $lastName
-                // ];
-
-                // echo $firstName . " " . $lastName;
-                // exit;
-
-                if ($this->userModel->createUser($firstName, $lastName)) {
+                if ($this->userModel->createUser($firstName, $lastName, $deptID)) {
                     echo "User created successfully.";
                     exit;
                 } else {
@@ -49,25 +37,18 @@
             }
         }
 
-        public function updateFunc($firstName, $lastName, $userId) {
+        public function updateFunc($firstName, $lastName, $deptID, $userID) {
             try {
-                // if (empty($firstName) || empty($lastName)) {
-                //     throw new InvalidArgumentException("Please fill out the form.");
-                // }
+                if (empty($firstName) || empty($lastName) || empty($deptID)) {
+                    throw new InvalidArgumentException("Please fill out the form.");
+                }
                 
                 if ($this -> userExists($firstName, $lastName)) {
                     echo "exists";
                     exit;
                 }
 
-                // if(isset($_SESSION ["userArr"][$userId])) {
-                //     $_SESSION ["userArr"][$userId]["firstName"] = $firstName;
-                //     $_SESSION ["userArr"][$userId]["lastName"] = $lastName;
-                //     echo $firstName . " " . $lastName;
-                //     exit;
-                // }
-
-                if($this->userModel->updateUser($userId, $firstName, $lastName)) {
+                if($this -> userModel -> updateUser($userID, $firstName, $lastName, $deptID)) {
                     echo "User updated successfully.";
                     exit;
                 } else {
@@ -83,7 +64,6 @@
         }
 
         public function userExists($firstName, $lastName) {
-
             $users = $this->getUsers();
             foreach ($users as $user) {
                 if ($user["first_name"] === $firstName && $user["last_name"] === $lastName)
@@ -94,18 +74,6 @@
         }
 
         public function deleteFunc($userID) {
-            // if (isset($_SESSION["userArr"][$index])) {
-            //     $firstName = $_SESSION["userArr"][$index]["firstName"];
-            //     $lastName = $_SESSION["userArr"][$index]["lastName"];
-
-            //     unset($_SESSION["userArr"][$index]);
-
-            //     echo $firstName . " " . $lastName;
-            //     exit;
-            // }
-            // echo "User not found.";
-            // exit;
-
             try {
                 if($this->userModel->deleteUser($userID)) {
                     echo "User deleted successfully.";
@@ -122,28 +90,25 @@
         }
 
         public function loginFunc($firstName, $lastName) {
-            $fNameColumn = array_column($_SESSION["userArr"], "firstName");
-            $fNameResult = array_search($firstName, $fNameColumn);
+            $users = $this->getUsers();
 
-            $lNameColumn = array_column($_SESSION["userArr"], "lastName");
-            $lNameResult = array_search($lastName, $lNameColumn);
-
-            if($fNameResult !== false && $lNameResult !== false) {
-                // echo "Found at index $fNameResult and $lNameResult";
-                echo "success";
-                exit;
-            } else {
-                echo "error";
-                exit;
+            foreach ($users as $user) {
+                if ($user["first_name"] === $firstName && $user["last_name"] === $lastName) {
+                    echo "success";
+                    exit;
+                }
             }
+            echo "Invalid credentials.";
+            exit;
         }
-
-    // session_destroy();
     
         public function getUsers(){
-            // return $_SESSION["userArr"];
-
             $response = $this->userModel->readUsers();
+            return $response->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        public function getAdvancedUsers() {
+            $response = $this->userModel->readAdvancedUsers();
             return $response->fetchAll(PDO::FETCH_ASSOC);
         }
     }

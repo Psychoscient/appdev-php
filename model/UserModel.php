@@ -7,16 +7,17 @@
             $this->conn = $db;
         }
 
-        public function createUser($fName, $lName) {
+        public function createUser($fName, $lName, $deptID) {
 
             try {
                 $dateNow = date('Y-m-d H:i:s');
 
-                $insertQuery = "INSERT INTO tbl_users (first_name, last_name, created_at, updated_at) VALUES (:fName, :lName, :created_at, :updated_at)";                      
+                $insertQuery = "INSERT INTO tbl_users (first_name, last_name, dept_id, created_at, updated_at) VALUES (:fName, :lName, :deptID, :created_at, :updated_at)";                      
                 
                 $response = $this->conn->prepare($insertQuery);
                 $response->bindParam(":fName", $fName);
                 $response->bindParam(":lName", $lName);
+                $response->bindParam(":deptID", $deptID);
                 $response->bindParam(":created_at", $dateNow);
                 $response->bindParam(":updated_at", $dateNow);
                 
@@ -36,14 +37,15 @@
             return $response;
         }
 
-        public function updateUser($userID, $firstName, $lastName) {
-            $updateQuery = "UPDATE tbl_users SET first_name = :firstName, last_name = :lastName, updated_at = :updated_at WHERE user_id = :userID";
+        public function updateUser($userID, $firstName, $lastName, $deptID) {
+            $updateQuery = "UPDATE tbl_users SET first_name = :firstName, last_name = :lastName, dept_id = :deptID, updated_at = :updated_at WHERE user_id = :userID";
             $response = $this->conn->prepare($updateQuery);
 
             $dateNow = date('Y-m-d H:i:s');
 
             $response->bindParam(":firstName", $firstName);
             $response->bindParam(":lastName", $lastName);
+            $response->bindParam(":deptID", $deptID);
             $response->bindParam(":updated_at", $dateNow);
             $response->bindParam(":userID", $userID);
 
@@ -56,6 +58,14 @@
             $response->bindParam(":userID", $userID);
 
             return $response->execute();
+        }
+
+        public function readAdvancedUsers() {
+            $selectQuery = "SELECT * FROM tbl_users INNER JOIN tbl_departments ON tbl_users.dept_id = tbl_departments.dept_id";
+            $response = $this->conn->prepare($selectQuery);
+            $response->execute();
+
+            return $response;
         }
     }
 ?>

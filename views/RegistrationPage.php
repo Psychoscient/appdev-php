@@ -1,10 +1,17 @@
 <?php
     session_start();
     require_once "../bl/UserManager.php";
+    require_once "../bl/DepartmentManager.php";
     
     $usermanager = new UserManager();
     $users = $usermanager -> getUsers();
+    $advancedUsers = $usermanager -> getAdvancedUsers();
+
+    $deptmanager = new DepartmentManager();
+    $departments = $deptmanager -> getDepartments();
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -20,21 +27,8 @@
     <title>Registration</title>
 </head>
 <body>
-    <!-- <h1>Registration Page</h1> -->
-    <!-- <div class="container">
-        <div class="form-container">
-            <label class="label" for="fname">First Name</label>
-            <input class="input" type="text" name="fname" id="fname">
-            <label class="label" for="lname">Last Name</label>
-            <input class="input" type="text" name="lname" id="lname">
-        </div>
-        <div class="btn-container">
-            <button class="add-btn" id="addBtn" onclick="addFunc()">Register!</button>
-        </div>
-    </div> -->
-
     <div class="row">
-        <?php if(!empty($users)) : ?>
+        <?php if(!empty($advancedUsers)) : ?>
             <button class="btn waves-effect waves-light" type="submit" name="action" onclick="redirectFunc(1)">Login
                 <i class="material-icons right">send</i>
             </button>
@@ -50,6 +44,16 @@
                 <div class="input-field col s12 m6 l6">
                     <input id="lname" type="text" class="validate" name="lname">
                     <label for="lname">Last Name</label>
+                </div>
+
+                <div class="input-field col s12">
+                    <select id="deptSelect">
+                        <option value="" disabled selected>Choose your option</option>
+                        <?php foreach($departments as $index => $department) : ?>
+                        <option value="<?= $department['dept_id'] ?>"><?= $department['dept_name'] ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <label>Materialize Select</label>
                 </div>
 
                 <div class="col s12">
@@ -69,15 +73,17 @@
                     <th style="text-align: center;">User ID</th>
                     <th style="text-align: center;">First Name</th>
                     <th style="text-align: center;">Last Name</th>
+                    <th style="text-align: center;">Department</th>
                     <th style="text-align: center;">Action</th>
                 </tr>
 
-                <?php if (!empty($users)) : ?>
-                    <?php foreach($users as $index => $user) : ?>
+                <?php if (!empty($advancedUsers)) : ?>
+                    <?php foreach($advancedUsers as $index => $user) : ?>
                         <tr>
-                            <td><?= $index + 1 ?></td>
+                            <td><?= $user['user_id'] ?></td>
                             <td><?= $user['first_name'] ?></td>
                             <td><?= $user['last_name'] ?></td>
+                            <td><?= $user['dept_name'] ?></td>
                             <td>
                                 <button onclick="updateFunc(<?= $user['user_id'] ?>)"
                                         class="btn-small waves-effect waves-light green"

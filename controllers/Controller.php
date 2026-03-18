@@ -4,16 +4,16 @@
 
     $usermanager = new UserManager();
 
-    if(isset($_POST["firstName"], $_POST["lastName"]) && !isset($_POST["userId"])) { 
-        $usermanager -> addFunc($_POST["firstName"], $_POST["lastName"]);
+    if(isset($_POST["firstName"], $_POST["lastName"]) && $_POST["deptID"] && !isset($_POST["userID"])) { 
+        $usermanager -> addFunc($_POST["firstName"], $_POST["lastName"], $_POST["deptID"]);
         exit;
         
-    } else if(isset($_POST["firstName"], $_POST["lastName"], $_POST["userId"])) {
-        $usermanager -> updateFunc($_POST["firstName"], $_POST["lastName"], $_POST["userId"]);
+    } else if(isset($_POST["firstName"], $_POST["lastName"], $_POST["deptID"], $_POST["userID"])) {
+        $usermanager -> updateFunc($_POST["firstName"], $_POST["lastName"], $_POST["deptID"], $_POST["userID"]);
         exit;
 
-    } else if(isset($_POST["userId"])) {
-        $usermanager -> deleteFunc($_POST["userId"]);
+    } else if(isset($_POST["userID"])) {
+        $usermanager -> deleteFunc($_POST["userID"]);
         exit;
 
     } else if(isset($_POST["lFname"], $_POST["lLname"])) {

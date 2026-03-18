@@ -1,25 +1,34 @@
 function addFunc() {
     const fname = document.getElementById("fname").value;
     const lname = document.getElementById("lname").value;
+    const deptSelect = document.getElementById("deptSelect").value;
 
     $.ajax({
         url: "../controllers/Controller.php",
         type: "POST",
         data: {
             firstName: fname,
-            lastName: lname
+            lastName: lname,
+            deptID: deptSelect
         },
         success: function(response) {
+
             if (response === "exists") {
                 Swal.fire({
                     icon: "warning",
                     title: "Warning!",
                     text: "User already exists!"
                 });
+            } else if (!deptSelect) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Warning!",
+                    text: "Please select a department."
+                });
             } else {
                 Swal.fire({
                     title: "Success!",
-                    text: "Added: " + response,
+                    text: response,
                     icon: "success",
                     confirmButtonText: "OK"
                 }).then((result) => {
@@ -43,14 +52,16 @@ function addFunc() {
 function updateFunc(uID) {
     const fname = document.getElementById("fname").value;
     const lname = document.getElementById("lname").value;
-    alert(uID);
+    const deptSelect = document.getElementById("deptSelect").value;
+
     $.ajax({
         url: "../controllers/Controller.php",
         type: "POST",
         data: {
             firstName: fname,
             lastName: lname,
-            userId: uID,
+            deptID: deptSelect,
+            userID: uID,
         },
         success: function(response) {
             if (response === "exists") {
@@ -59,10 +70,16 @@ function updateFunc(uID) {
                     title: "Warning!",
                     text: "User already exists!"
                 });
+            } else if (!deptSelect) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Warning!",
+                    text: "Please select a department."
+                }); 
             } else {
                 Swal.fire({
                     title: "Success!",
-                    text: "Updated: " + response,
+                    text: response,
                     icon: "success",
                     confirmButtonText: "OK"
                 }).then((result) => {
@@ -87,12 +104,12 @@ function deleteFunc(index) {
         url: "../controllers/Controller.php",
         type: "POST",
         data: {
-            index: index,
+            userID: index,
         },
         success: function(response) {
             Swal.fire({
                     title: "Success!",
-                    text: "Deleted: " + response,
+                    text: response,
                     icon: "success",
                     confirmButtonText: "OK"
                 }).then((result) => {
@@ -144,9 +161,6 @@ function loginFunc() {
                         redirectFunc(2);
                     }
                 })
-                // const test = document.createElement("h1");
-                // test.textContent = "Login successful!";
-                // document.body.appendChild(test);
             } else {
                 Swal.fire({
                     icon: "error",
@@ -164,3 +178,7 @@ function loginFunc() {
         }
     });
 }
+
+$(document).ready(function(){
+    $('select').formSelect();
+});
